@@ -4,14 +4,23 @@ using UnityEngine;
 
 public class walk : MonoBehaviour {
 
+	// 目標に到達したとみなす半径
+	public float targetR = 0.1f;
+
+	// 目標に到達したとみなす角度差
+	public float targetAngleDif = 1.0f;
+
+	// 前方とみなすベクトルZ成分
+	public float forwardNormalizedZ = 0.5f;
+
 	// 秒間最高速度
-	public float maxSpeed = 5.0f;
+	public float maxSpeed = 3.0f;
 
 	// 最高速度に達するまでの秒数
 	public float accSec = 0.5f;
 
 	// ブレーキをかけ始める距離
-	public float brakeStartDis = 0.1f;
+	public float brakeStartDis = 0.5f;
 
 	// 秒間回転角度
 	public float rotateSpeed = 180.0f;
@@ -60,9 +69,19 @@ public class walk : MonoBehaviour {
 	{
 		// キャラから見た位置に変換
 		Vector3 localTargetVec = gameObject.transform.InverseTransformPoint (targetPos);
+		localTargetVec.y = 0;
 
-		// それが十分前方なら加速
-		if (localTargetVec.z > brakeStartDis) {
+		// 十分近いので到達したとみなす
+		if (localTargetVec.magnitude < targetR) {
+			targetPos = gameObject.transform.position;
+			speed = 0;
+			return 0;
+		}
+
+		// 十分前方かつ遠くなら加速
+		float vecZ = localTargetVec.z;
+		localTargetVec.Normalize ();
+		if (vecZ > brakeStartDis && localTargetVec.z > forwardNormalizedZ) {
 			// 加速度
 			float acc = maxSpeed / accSec;
 
@@ -81,7 +100,7 @@ public class walk : MonoBehaviour {
 		}
 
 		// 距離に応じた目標速度
-		float targetSpeed = maxSpeed * System.Math.Max(0, localTargetVec.z) / brakeStartDis;
+		float targetSpeed = maxSpeed * System.Math.Min(brakeStartDis, System.Math.Max(0, vecZ)) / brakeStartDis;
 
 		// その速度まで落ちるための加速度
 		float brakeAcc = (targetSpeed - speed) / Time.deltaTime;
@@ -114,7 +133,7 @@ public class walk : MonoBehaviour {
 
 		// Y位置更新
 		Vector3 pos = gameObject.transform.position;
-		if (vec0.magnitude < 0.01f) { // 十分近いので到着したとみなす
+		if (vec0.magnitude < targetR) { // 十分近いので到着したとみなす
 			pos.y = targetPos.y;
 		} else { // 距離に応じたリニア補間
 			float rate = vec1.magnitude / vec0.magnitude;
@@ -131,7 +150,7 @@ public class walk : MonoBehaviour {
 		targetVec.y = 0.0f;
 
 		// 十分近いので到着しているとみなす
-		if (targetVec.magnitude < 0.01f) {
+		if (targetVec.magnitude < targetR) {
 			return;
 		}
 
@@ -140,6 +159,12 @@ public class walk : MonoBehaviour {
 
 		// 間の角度
 		float angle = Quaternion.Angle(gameObject.transform.rotation, targetRot);
+
+		// 十分近いので到着しているとみなす
+		if (angle < targetAngleDif) {
+			gameObject.transform.rotation = targetRot;
+			return;
+		}
 
 		// 補間率
 		float rate = rotateSpeed * Time.deltaTime / angle;
@@ -163,13 +188,16 @@ public class walk : MonoBehaviour {
 		// 角度更新
 		UpdateRotate();
 
-		// キャラから見た位置に変換
+		// モーション制御
 		Vector3 localTargetVec = gameObject.transform.InverseTransformPoint (targetPos);
 		localTargetVec.y = 0;
-		localTargetVec.Normalize ();
-
-		// モーション制御
-		Vector3 motionBlendTarget = new Vector3(localTargetVec.x, 0, speed / maxSpeed);
+		Vector3 motionBlendTarget = new Vector3 (0, 0, 0);
+		if (localTargetVec.magnitude < targetR) {
+		} else {
+			localTargetVec.Normalize ();
+			motionBlendTarget.x = localTargetVec.x;
+			motionBlendTarget.z = speed / maxSpeed;
+		}
 		motionBlend = (motionBlendTarget - motionBlend) * 0.1f + motionBlend;
 		GetComponent<Animator>().SetFloat("X", motionBlend.x);
 		GetComponent<Animator>().SetFloat("Z", motionBlend.z);
