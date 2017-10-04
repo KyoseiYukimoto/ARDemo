@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class walk : MonoBehaviour {
+public class AvatarWalk : MonoBehaviour {
 
 	// 目標に到達したとみなす半径
 	public float targetR = 0.1f;
@@ -36,6 +36,14 @@ public class walk : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+	}
+
+	// 初期化
+	public void Reset(Vector3 position)
+	{
+		// 初期位置
+		gameObject.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 10;
+
 		// 目標位置は初期位置
 		targetPos = gameObject.transform.position;
 
@@ -176,6 +184,7 @@ public class walk : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
+		/*
 		// クリックした場所を目標位置にする
 		UpdateTargetPos();
 
@@ -188,7 +197,7 @@ public class walk : MonoBehaviour {
 		// 角度更新
 		UpdateRotate();
 
-		// モーション制御
+		// モーションブレンド制御
 		Vector3 localTargetVec = gameObject.transform.InverseTransformPoint (targetPos);
 		localTargetVec.y = 0;
 		Vector3 motionBlendTarget = new Vector3 (0, 0, 0);
@@ -201,5 +210,6 @@ public class walk : MonoBehaviour {
 		motionBlend = (motionBlendTarget - motionBlend) * 0.1f + motionBlend;
 		GetComponent<Animator>().SetFloat("X", motionBlend.x);
 		GetComponent<Animator>().SetFloat("Z", motionBlend.z);
+		*/
 	}
 }
