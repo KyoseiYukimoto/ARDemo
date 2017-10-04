@@ -46,6 +46,12 @@ namespace UnityEngine.XR.iOS
                 mf.gameObject.transform.localPosition = new Vector3(arPlaneAnchor.center.x,arPlaneAnchor.center.y, -arPlaneAnchor.center.z);
 			}
 
+			// yukimoto add
+			AvatarWalk avatar = plane.GetComponentInChildren<AvatarWalk>();
+			if (avatar != null) {
+				avatar.SetPlane (arPlaneAnchor);
+			}
+
 			return plane;
 		}
 

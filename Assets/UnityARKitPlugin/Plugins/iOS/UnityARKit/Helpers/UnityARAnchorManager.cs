@@ -23,6 +23,7 @@ namespace UnityEngine.XR.iOS
 
 		public void AddAnchor(ARPlaneAnchor arPlaneAnchor)
 		{
+			Debug.Log ("add plane id:" + arPlaneAnchor.identifier + " extent:" + arPlaneAnchor.extent.x + "," + arPlaneAnchor.extent.y + "," + arPlaneAnchor.extent.z);
 			GameObject go = UnityARUtility.CreatePlaneInScene (arPlaneAnchor);
 			go.AddComponent<DontDestroyOnLoad> ();  //this is so these GOs persist across scene loads
 			ARPlaneAnchorGameObject arpag = new ARPlaneAnchorGameObject ();
@@ -33,6 +34,7 @@ namespace UnityEngine.XR.iOS
 
 		public void RemoveAnchor(ARPlaneAnchor arPlaneAnchor)
 		{
+			Debug.Log ("remove plane id:" + arPlaneAnchor.identifier + " extent:" + arPlaneAnchor.extent.x + "," + arPlaneAnchor.extent.y + "," + arPlaneAnchor.extent.z);
 			if (planeAnchorMap.ContainsKey (arPlaneAnchor.identifier)) {
 				ARPlaneAnchorGameObject arpag = planeAnchorMap [arPlaneAnchor.identifier];
 				GameObject.Destroy (arpag.gameObject);
@@ -42,6 +44,7 @@ namespace UnityEngine.XR.iOS
 
 		public void UpdateAnchor(ARPlaneAnchor arPlaneAnchor)
 		{
+			Debug.Log ("update plane id:" + arPlaneAnchor.identifier + " extent:" + arPlaneAnchor.extent.x + "," + arPlaneAnchor.extent.y + "," + arPlaneAnchor.extent.z);
 			if (planeAnchorMap.ContainsKey (arPlaneAnchor.identifier)) {
 				ARPlaneAnchorGameObject arpag = planeAnchorMap [arPlaneAnchor.identifier];
 				UnityARUtility.UpdatePlaneWithAnchorTransform (arpag.gameObject, arPlaneAnchor);

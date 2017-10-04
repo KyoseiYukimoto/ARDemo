@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.XR.iOS;
 
 public class AvatarWalk : MonoBehaviour {
 
@@ -38,18 +39,47 @@ public class AvatarWalk : MonoBehaviour {
 	void Start () {
 	}
 
-	// 初期化
-	public void Reset(Vector3 position)
+	// 平面
+	class AvatarPlane {
+		public Vector3 center { get; private set; }
+		public Quaternion rotate { get; private set; }
+		public Vector3 extent { get; private set; }
+		public void Setup(ARPlaneAnchor arPlaneAnchor) {
+			center = new Vector3(arPlaneAnchor.center.x,arPlaneAnchor.center.y, -arPlaneAnchor.center.z);
+			rotate = UnityARMatrixOps.GetRotation (arPlaneAnchor.transform);
+			extent = arPlaneAnchor.extent;
+		}
+	}
+	AvatarPlane plane;
+
+	// 土台の平面
+	public void SetPlane(ARPlaneAnchor arPlaneAnchor)
 	{
-		// 初期位置
-		gameObject.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 10;
+		Debug.Log ("SetPlane:" + arPlaneAnchor.identifier);
+
+		// キャラの初期化済みか？
+		bool isFirst = (plane == null);
+		if (isFirst) {
+			plane = new AvatarPlane ();
+		}
+
+		// 平面記録
+		plane.Setup (arPlaneAnchor);
+
+		// 以下はキャラの初期化
+		if (!isFirst) {
+			//return;
+		}
+
+		// 初期位置を中心位置に
+		gameObject.transform.localPosition = plane.center;
 
 		// 目標位置は初期位置
-		targetPos = gameObject.transform.position;
+		targetPos = gameObject.transform.localPosition;
 
 		// 向きの初期化
 		Quaternion rot = Quaternion.Euler(new Vector3(0, 180.0f, 0));
-		gameObject.transform.rotation = rot;
+		gameObject.transform.localRotation = rot;
 	}
 
 	// クリックした場所を目標位置にする
