@@ -35,17 +35,25 @@ public class AvatarWalk : MonoBehaviour {
 	// 現在の回転向き
 	Vector3 motionBlend = new Vector3(0, 0, 0);
 
+	// ターゲット位置確認用キューブ
+	GameObject cube;
+
 	// Use this for initialization
 	void Start () {
+		// キューブを探しておく
+		GameObject root = transform.parent.transform.gameObject;
+		cube = root.transform.Find ("Cube").gameObject;
 	}
 
 	// 平面
 	class AvatarPlane {
 		public Vector3 center { get; private set; }
+		public Matrix4x4 matrix { get; private set; }
 		public Quaternion rotate { get; private set; }
 		public Vector3 extent { get; private set; }
 		public void Setup(ARPlaneAnchor arPlaneAnchor) {
 			center = new Vector3(arPlaneAnchor.center.x,arPlaneAnchor.center.y, -arPlaneAnchor.center.z);
+			matrix = arPlaneAnchor.transform;
 			rotate = UnityARMatrixOps.GetRotation (arPlaneAnchor.transform);
 			extent = arPlaneAnchor.extent;
 		}
@@ -85,21 +93,43 @@ public class AvatarWalk : MonoBehaviour {
 	// クリックした場所を目標位置にする
 	void UpdateTargetPos()
 	{
-		// クリックした瞬間のみ更新
-		if (!Input.GetMouseButtonDown(1)) {
+		// 平面が必要
+		if (plane == null) {
 			return;
 		}
+
+		// クリックした瞬間のみ更新
+		if (!Input.GetMouseButtonDown(0)) {
+			return;
+		}
+		Debug.Log ("Click!");
 
 		// クリックした床の位置を取得
 		RaycastHit hit;
 		Camera camera = Camera.main;
 		Ray ray = camera.ScreenPointToRay(Input.mousePosition);
-		if (!Physics.Raycast (ray, out hit)) {
-			Debug.Log ("not hit");
+		Vector3 pos3a = camera.transform.position;
+		Vector3 pos3b = pos3a + ray.direction;
+		Debug.Log ("pos3a " + pos3a.x + "," + pos3a.y + "," + pos3a.z);
+		Debug.Log ("pos3b " + pos3b.x + "," + pos3b.y + "," + pos3b.z);
+		GameObject root = transform.parent.transform.gameObject;
+		//Vector4 pos0 = plane.matrix.inverse * new Vector4(pos3a.x, pos3a.y, pos3a.z, 1);
+		//Vector4 pos1 = plane.matrix.inverse * new Vector4(pos3b.x, pos3b.y, pos3b.z, 1);
+		Vector3 pos0 = root.transform.InverseTransformPoint(pos3a);
+		Vector3 pos1 = root.transform.InverseTransformPoint(pos3b);
+		Debug.Log ("pos0 " + pos0.x + "," + pos0.y + "," + pos0.z);
+		Debug.Log ("pos1 " + pos1.x + "," + pos1.y + "," + pos1.z);
+		Vector3 vec = pos1 - pos0;
+		vec.Normalize ();
+		Debug.Log ("vec " + vec.x + "," + vec.y + "," + vec.z);
+		if (vec.y > -0.01f) { // 平行または離れるっぽい
 			return;
 		}
-		Debug.Log ("hit:" + hit.point.x + ", " + hit.point.y + ", " + hit.point.z);
-		targetPos = hit.point;
+		float scale = pos0.y / vec.y;
+		Debug.Log ("scale " + scale);
+		Vector3 pos = new Vector3(pos0.x, pos0.y, pos0.z) - vec * scale;
+		Debug.Log ("pos " + pos.x + "," + pos.y + "," + pos.z);
+		targetPos = pos;
 	}
 
 	// 速度を更新
@@ -214,9 +244,12 @@ public class AvatarWalk : MonoBehaviour {
 
 	// Update is called once per frame
 	void Update () {
-		/*
 		// クリックした場所を目標位置にする
 		UpdateTargetPos();
+
+		// デバッグ用にキューブの位置更新
+		cube.transform.localPosition = targetPos;
+		/*
 
 		// 速度更新
 		float moveDis = UpdateSpeedAndGetMoveDis();
