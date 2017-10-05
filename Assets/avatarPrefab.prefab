@@ -931,6 +931,7 @@ GameObject:
   - component: {fileID: 4206378734661028}
   - component: {fileID: 95356578555499762}
   - component: {fileID: 114126708433303144}
+  - component: {fileID: 114208093402760964}
   m_Layer: 0
   m_Name: unitychan
   m_TagString: Untagged
@@ -3115,7 +3116,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1552008594529638}
-  m_LocalRotation: {x: -0.093746535, y: 0.6978551, z: 0.707469, w: 0.060806718}
+  m_LocalRotation: {x: -0.093746535, y: 0.6978551, z: 0.707469, w: 0.060806707}
   m_LocalPosition: {x: -0.05543403, y: 0.0017306843, z: 0.098653734}
   m_LocalScale: {x: 1.0000004, y: 1.0000006, z: 1.0000005}
   m_Children:
@@ -5254,6 +5255,43 @@ MonoBehaviour:
   accSec: 0.5
   brakeStartDis: 0.5
   rotateSpeed: 180
+--- !u!114 &114208093402760964
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1339980210480252}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb4fa562d67034868a9aafbe4b663012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rootNode: {fileID: 0}
+  segments:
+  - firstTransform: {fileID: 4066884005648612}
+    lastTransform: {fileID: 4215002412383488}
+    thresholdAngleDifference: 0
+    bendingMultiplier: 0.7
+    maxAngleDifference: 90
+    maxBendingAngle: 40
+    responsiveness: 2.5
+  - firstTransform: {fileID: 4672085817852816}
+    lastTransform: {fileID: 4408359687178026}
+    thresholdAngleDifference: 0
+    bendingMultiplier: 0.7
+    maxAngleDifference: 30
+    maxBendingAngle: 30
+    responsiveness: 80
+  nonAffectedJoints:
+  - joint: {fileID: 4335416038675228}
+    effect: 0.3
+  - joint: {fileID: 4023199812708254}
+    effect: 0.3
+  headLookVector: {x: 0, y: 0, z: 1}
+  headUpVector: {x: 0, y: 1, z: 0}
+  target: {x: 0, y: 0, z: 0}
+  effect: 1
+  overrideAnimation: 0
 --- !u!137 &137028325352811526
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

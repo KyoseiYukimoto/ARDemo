@@ -332,4 +332,14 @@ public class AvatarWalk : MonoBehaviour {
 		GetComponent<Animator>().SetFloat("X", motionBlend.x);
 		GetComponent<Animator>().SetFloat("Z", motionBlend.z);
 	}
+
+	// 顔の向き制御
+	void LateUpdate()
+	{
+		HeadLookController hl = gameObject.GetComponent<HeadLookController> ();
+		if (hl == null) {
+			return;
+		}
+		hl.target = Camera.main.transform.position;
+	}
 }

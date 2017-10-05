@@ -47,6 +47,10 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\AvatarWalk.cs" />
+     <Compile Include="Assets\Head Look Controller\Scripts\CursorHit.cs" />
+     <Compile Include="Assets\Head Look Controller\Scripts\HeadLookController.cs" />
+     <Compile Include="Assets\Head Look Controller\Scripts\HelpText.cs" />
+     <Compile Include="Assets\Head Look Controller\Scripts\OrbitCamera.cs" />
      <Compile Include="Assets\UnityARKitPlugin\ARKitRemote\ARKitRemoteConnection.cs" />
      <Compile Include="Assets\UnityARKitPlugin\ARKitRemote\ConnectToEditor.cs" />
      <Compile Include="Assets\UnityARKitPlugin\ARKitRemote\ConnectionMessageIds.cs" />
@@ -118,6 +122,7 @@
      <Compile Include="Assets\UnityChan\Scripts\UnityChanControlScriptWithRgidBody.cs" />
      <None Include="Assets\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_eye.shader" />
      <None Include="Assets\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_fuku.shader" />
+     <None Include="Assets\Jade Samurai - Mobile\Info.txt" />
      <None Include="Assets\UnityChan\license.txt" />
      <None Include="Assets\UnityARKitPlugin\Examples\Common\Shaders\MobileOcclusion.shader" />
      <None Include="Assets\UnityChan\Models\UnityChanShader\Shader\Unitychan_chara_fuku_ds.shader" />
