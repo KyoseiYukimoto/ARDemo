@@ -35,6 +35,9 @@ public class AvatarWalk2 : MonoBehaviour {
 	// カメラ中央へ
 	float cameraTargetWait = 0.0f;
 
+	// カメラの床検出ベクトル画面比率
+	float cameraVecRateY = 0.25f;
+
 	// 現在の回転向き
 	Vector3 motionBlend = new Vector3(0, 0, 0);
 
@@ -101,7 +104,7 @@ public class AvatarWalk2 : MonoBehaviour {
 		if (!Input.GetMouseButtonDown (0)) {
 			return;
 		}
-		Debug.Log ("Click!");
+		Debug.Log ("Click! x:" + Input.mousePosition.x + " y:" + Input.mousePosition.y + " z:" + Input.mousePosition.z + " w:" + Screen.width + " h:" + Screen.height);
 
 		// クリックした床の位置を取得
 		Camera camera = Camera.main;
@@ -123,7 +126,12 @@ public class AvatarWalk2 : MonoBehaviour {
 			if (float.TryParse (wait.text, out waitSec) && waitSec >= 0) {
 				cameraTargetWait += Time.deltaTime;
 				if (cameraTargetWait > waitSec) {
+		#if false
 					CalcTargetPos (camera.transform.position, camera.transform.position + camera.transform.forward);
+		#else
+					Ray ray2 = camera.ScreenPointToRay (new Vector3(Screen.width * 0.5f, Screen.height * cameraVecRateY, 0));
+					CalcTargetPos (camera.transform.position, camera.transform.position + ray2.direction);
+		#endif
 					cameraTargetWait = 0;
 				}
 				return;

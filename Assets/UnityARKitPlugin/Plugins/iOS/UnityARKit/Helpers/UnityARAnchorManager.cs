@@ -23,7 +23,12 @@ namespace UnityEngine.XR.iOS
 
 		public void AddAnchor(ARPlaneAnchor arPlaneAnchor)
 		{
+			// 最初の一個のみ
 			Debug.Log ("add plane id:" + arPlaneAnchor.identifier + " extent:" + arPlaneAnchor.extent.x + "," + arPlaneAnchor.extent.y + "," + arPlaneAnchor.extent.z);
+			if (planeAnchorMap.Count > 0) {
+				return;
+			}
+
 			GameObject go = UnityARUtility.CreatePlaneInScene (arPlaneAnchor);
 			go.AddComponent<DontDestroyOnLoad> ();  //this is so these GOs persist across scene loads
 			ARPlaneAnchorGameObject arpag = new ARPlaneAnchorGameObject ();
