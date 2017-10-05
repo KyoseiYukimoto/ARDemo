@@ -32,6 +32,9 @@ public class AvatarWalk : MonoBehaviour {
 	// 現在の速度
 	float speed = 0.0f;
 
+	// カメラ中央へ
+	float cameraTargetWait = 0.0f;
+
 	// 現在の回転向き
 	Vector3 motionBlend = new Vector3(0, 0, 0);
 
@@ -76,7 +79,7 @@ public class AvatarWalk : MonoBehaviour {
 
 		// 以下はキャラの初期化
 		if (!isFirst) {
-			//return;
+			return;
 		}
 
 		// 初期位置を中心位置に
@@ -98,25 +101,50 @@ public class AvatarWalk : MonoBehaviour {
 			return;
 		}
 
+		// 一定間隔ごとにカメラ中央へ
+		Camera camera = Camera.main;
+		GameObject waitGO = GameObject.Find ("InputField");
+		UnityEngine.UI.InputField wait = (waitGO == null) ? null : waitGO.GetComponent<UnityEngine.UI.InputField> ();
+		if (wait != null) {
+			float waitSec = -1;
+			if (float.TryParse (wait.text, out waitSec) && waitSec >= 0) {
+				cameraTargetWait += Time.deltaTime;
+				if (cameraTargetWait > waitSec) {
+					CalcTargetPos (camera.transform.position, camera.transform.position + camera.transform.forward);
+					cameraTargetWait = 0;
+				}
+				return;
+			}
+		}
+		cameraTargetWait = 0;
+
 		// クリックした瞬間のみ更新
-		if (!Input.GetMouseButtonDown(0)) {
+		if (!Input.GetMouseButtonDown (0)) {
 			return;
 		}
 		Debug.Log ("Click!");
 
 		// クリックした床の位置を取得
 		RaycastHit hit;
-		Camera camera = Camera.main;
-		Ray ray = camera.ScreenPointToRay(Input.mousePosition);
+		Ray ray = camera.ScreenPointToRay (Input.mousePosition);
 		Vector3 pos3a = camera.transform.position;
 		Vector3 pos3b = pos3a + ray.direction;
+
+		// そこをターゲットに
+		CalcTargetPos(pos3a, pos3b);
+	}
+
+	// pos3aからpos3bへ向かうベクトルと床平面との交点を目標位置にする
+	void CalcTargetPos(Vector3 pos3a, Vector3 pos3b)
+	{
+		// 床平面と直線との交点を求める
 		Debug.Log ("pos3a " + pos3a.x + "," + pos3a.y + "," + pos3a.z);
 		Debug.Log ("pos3b " + pos3b.x + "," + pos3b.y + "," + pos3b.z);
 		GameObject root = transform.parent.transform.gameObject;
 		//Vector4 pos0 = plane.matrix.inverse * new Vector4(pos3a.x, pos3a.y, pos3a.z, 1);
 		//Vector4 pos1 = plane.matrix.inverse * new Vector4(pos3b.x, pos3b.y, pos3b.z, 1);
-		Vector3 pos0 = root.transform.InverseTransformPoint(pos3a);
-		Vector3 pos1 = root.transform.InverseTransformPoint(pos3b);
+		Vector3 pos0 = root.transform.InverseTransformPoint (pos3a);
+		Vector3 pos1 = root.transform.InverseTransformPoint (pos3b);
 		Debug.Log ("pos0 " + pos0.x + "," + pos0.y + "," + pos0.z);
 		Debug.Log ("pos1 " + pos1.x + "," + pos1.y + "," + pos1.z);
 		Vector3 vec = pos1 - pos0;
@@ -127,21 +155,43 @@ public class AvatarWalk : MonoBehaviour {
 		}
 		float scale = pos0.y / vec.y;
 		Debug.Log ("scale " + scale);
-		Vector3 pos = new Vector3(pos0.x, pos0.y, pos0.z) - vec * scale;
+		Vector3 pos = new Vector3 (pos0.x, pos0.y, pos0.z) - vec * scale;
 		Debug.Log ("pos " + pos.x + "," + pos.y + "," + pos.z);
 		targetPos = pos;
+	}
+
+	// targetPosを平面の範囲内にクリップする
+	void ClipTargetPos()
+	{
+		// 平面の範囲内にクリップするか
+		GameObject clipGO = GameObject.Find("Clip");
+		UnityEngine.UI.Toggle toggle = (clipGO == null) ? null : clipGO.GetComponent<UnityEngine.UI.Toggle> ();
+		if (toggle == null || !toggle.isOn) {
+			return;
+		}
+
+		// クリップ処理
+		Vector3 p = targetPos - plane.center;
+		if (System.Math.Abs(p.x) > System.Math.Abs(plane.extent.x)) {
+			p *= System.Math.Abs(plane.extent.x / p.x);
+		}
+		if (System.Math.Abs(p.z) > System.Math.Abs(plane.extent.z)) {
+			p *= System.Math.Abs(plane.extent.z / p.z);
+		}
+		targetPos = p + plane.center;
 	}
 
 	// 速度を更新
 	float UpdateSpeedAndGetMoveDis()
 	{
 		// キャラから見た位置に変換
-		Vector3 localTargetVec = gameObject.transform.InverseTransformPoint (targetPos);
+		Matrix4x4 matrix = Matrix4x4.TRS(gameObject.transform.localPosition, gameObject.transform.localRotation, new Vector3(1, 1, 1));
+		Vector3 localTargetVec = matrix.inverse.MultiplyPoint (targetPos);
 		localTargetVec.y = 0;
 
 		// 十分近いので到達したとみなす
 		if (localTargetVec.magnitude < targetR) {
-			targetPos = gameObject.transform.position;
+			targetPos = gameObject.transform.localPosition;
 			speed = 0;
 			return 0;
 		}
@@ -187,27 +237,29 @@ public class AvatarWalk : MonoBehaviour {
 	void UpdatePosition(float moveDis)
 	{
 		// 移動前のベクトル
-		Vector3 vec = targetPos - gameObject.transform.position;
+		Vector3 vec = targetPos - gameObject.transform.localPosition;
 
 		// 移動前のXZベクトル
 		Vector3 vec0 = new Vector3 (vec.x, 0, vec.z);
 
 		// XZ位置更新
-		gameObject.transform.position += gameObject.transform.forward * moveDis;
+		Vector3 forward = vec0;
+		forward.Normalize ();
+		gameObject.transform.localPosition += forward * moveDis;
 
 		// 移動後のXZベクトル
-		Vector3 vec1 = targetPos - gameObject.transform.position;
+		Vector3 vec1 = targetPos - gameObject.transform.localPosition;
 		vec1.y = 0;
 
 		// Y位置更新
-		Vector3 pos = gameObject.transform.position;
+		Vector3 pos = gameObject.transform.localPosition;
 		if (vec0.magnitude < targetR) { // 十分近いので到着したとみなす
 			pos.y = targetPos.y;
 		} else { // 距離に応じたリニア補間
 			float rate = vec1.magnitude / vec0.magnitude;
 			pos.y += vec.y * (1 - rate);
 		}
-		gameObject.transform.position = pos;
+		gameObject.transform.localPosition = pos;
 	}
 
 	// 向きを更新
@@ -226,11 +278,11 @@ public class AvatarWalk : MonoBehaviour {
 		Quaternion targetRot = Quaternion.LookRotation (targetVec);
 
 		// 間の角度
-		float angle = Quaternion.Angle(gameObject.transform.rotation, targetRot);
+		float angle = Quaternion.Angle(gameObject.transform.localRotation, targetRot);
 
 		// 十分近いので到着しているとみなす
 		if (angle < targetAngleDif) {
-			gameObject.transform.rotation = targetRot;
+			gameObject.transform.localRotation = targetRot;
 			return;
 		}
 
@@ -239,17 +291,17 @@ public class AvatarWalk : MonoBehaviour {
 		rate = System.Math.Min (rate, 1);
 
 		// 補間
-		gameObject.transform.rotation = Quaternion.Slerp(gameObject.transform.rotation, targetRot, rate);
+		gameObject.transform.localRotation = Quaternion.Slerp(gameObject.transform.localRotation, targetRot, rate);
 	}
 
 	// Update is called once per frame
 	void Update () {
 		// クリックした場所を目標位置にする
 		UpdateTargetPos();
+		ClipTargetPos ();
 
 		// デバッグ用にキューブの位置更新
 		cube.transform.localPosition = targetPos;
-		/*
 
 		// 速度更新
 		float moveDis = UpdateSpeedAndGetMoveDis();
@@ -261,7 +313,8 @@ public class AvatarWalk : MonoBehaviour {
 		UpdateRotate();
 
 		// モーションブレンド制御
-		Vector3 localTargetVec = gameObject.transform.InverseTransformPoint (targetPos);
+		Matrix4x4 matrix = Matrix4x4.TRS(gameObject.transform.localPosition, gameObject.transform.localRotation, new Vector3(1, 1, 1));
+		Vector3 localTargetVec = matrix.inverse.MultiplyPoint (targetPos);
 		localTargetVec.y = 0;
 		Vector3 motionBlendTarget = new Vector3 (0, 0, 0);
 		if (localTargetVec.magnitude < targetR) {
@@ -273,6 +326,5 @@ public class AvatarWalk : MonoBehaviour {
 		motionBlend = (motionBlendTarget - motionBlend) * 0.1f + motionBlend;
 		GetComponent<Animator>().SetFloat("X", motionBlend.x);
 		GetComponent<Animator>().SetFloat("Z", motionBlend.z);
-		*/
 	}
 }
