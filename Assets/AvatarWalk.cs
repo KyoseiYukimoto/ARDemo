@@ -302,6 +302,11 @@ public class AvatarWalk : MonoBehaviour {
 
 		// デバッグ用にキューブの位置更新
 		cube.transform.localPosition = targetPos;
+		GameObject cubeGO = GameObject.Find("CubeToggle");
+		UnityEngine.UI.Toggle toggle = (cubeGO == null) ? null : cubeGO.GetComponent<UnityEngine.UI.Toggle> ();
+		if (toggle != null) {
+			cube.SetActive (toggle.isOn);
+		}
 
 		// 速度更新
 		float moveDis = UpdateSpeedAndGetMoveDis();
