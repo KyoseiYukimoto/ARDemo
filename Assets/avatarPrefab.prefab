@@ -1859,6 +1859,7 @@ GameObject:
   - component: {fileID: 64494273260508074}
   - component: {fileID: 23505062156595448}
   - component: {fileID: 65125012964793972}
+  - component: {fileID: 114309189607630556}
   m_Layer: 10
   m_Name: Plane
   m_TagString: Untagged
@@ -6390,6 +6391,17 @@ MonoBehaviour:
   target: {x: 0, y: 0, z: 0}
   effect: 1
   overrideAnimation: 0
+--- !u!114 &114309189607630556
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1595116533763838}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1b097b4da0a6746b09e4b862970e718f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &114627075994713286
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6402,7 +6414,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   targetR: 0.1
-  nextTargetR: 1
   targetAngleDif: 1
   forwardNormalizedZ: 0.95
   maxSpeed: 3

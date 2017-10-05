@@ -119,7 +119,7 @@ public class AvatarWalk2 : MonoBehaviour {
 
 		// 一定間隔ごとにカメラ中央へ
 		Camera camera = Camera.main;
-		GameObject waitGO = GameObject.Find ("InputField");
+		GameObject waitGO = GameObject.Find("Canvas").transform.Find ("Panel/InputField").gameObject;
 		UnityEngine.UI.InputField wait = (waitGO == null) ? null : waitGO.GetComponent<UnityEngine.UI.InputField> ();
 		if (wait != null) {
 			float waitSec = -1;
@@ -171,7 +171,7 @@ public class AvatarWalk2 : MonoBehaviour {
 		Vector3 pos = new Vector3 (pos0.x, pos0.y, pos0.z) - vec * scale;
 
 		// 現在の目標位置からある程度離れている時だけ更新
-		GameObject GO = GameObject.Find ("InputFieldNextTargetDis");
+		GameObject GO = GameObject.Find("Canvas").transform.Find ("Panel/InputFieldNextTargetDis").gameObject;
 		UnityEngine.UI.InputField IF = (GO == null) ? null : GO.GetComponent<UnityEngine.UI.InputField> ();
 		if (IF != null) {
 			float nextTargetDis = -1;
@@ -188,7 +188,7 @@ public class AvatarWalk2 : MonoBehaviour {
 	void ClipTargetPos()
 	{
 		// 平面の範囲内にクリップするか
-		GameObject clipGO = GameObject.Find("Clip");
+		GameObject clipGO = GameObject.Find("Canvas").transform.Find("Panel/Clip").gameObject;
 		UnityEngine.UI.Toggle toggle = (clipGO == null) ? null : clipGO.GetComponent<UnityEngine.UI.Toggle> ();
 		if (toggle == null || !toggle.isOn) {
 			return;
@@ -326,7 +326,7 @@ public class AvatarWalk2 : MonoBehaviour {
 
 		// デバッグ用にキューブの位置更新
 		cube.transform.localPosition = targetPos;
-		GameObject cubeGO = GameObject.Find("CubeToggle");
+		GameObject cubeGO = GameObject.Find("Canvas").transform.Find("Panel/CubeToggle").gameObject;
 		UnityEngine.UI.Toggle toggle = (cubeGO == null) ? null : cubeGO.GetComponent<UnityEngine.UI.Toggle> ();
 		if (toggle != null) {
 			cube.SetActive (toggle.isOn);
