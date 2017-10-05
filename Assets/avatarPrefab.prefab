@@ -2891,7 +2891,8 @@ GameObject:
   m_Component:
   - component: {fileID: 4149984193702038}
   - component: {fileID: 95455140379493262}
-  - component: {fileID: 114022211127563412}
+  - component: {fileID: 114627075994713286}
+  - component: {fileID: 114284334104591892}
   m_Layer: 0
   m_Name: Samurai_Character
   m_TagString: Untagged
@@ -4055,7 +4056,7 @@ Transform:
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1271818721962396}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -6301,24 +6302,6 @@ Animator:
   m_WarningMessage: 
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
---- !u!114 &114022211127563412
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1949216185856970}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3d692afe419dc432cbeedbdae4a9b773, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  targetR: 0.1
-  targetAngleDif: 1
-  forwardNormalizedZ: 0.5
-  maxSpeed: 3
-  accSec: 0.5
-  brakeStartDis: 0.5
-  rotateSpeed: 180
 --- !u!114 &114126708433303144
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -6374,6 +6357,58 @@ MonoBehaviour:
   target: {x: 0, y: 0, z: 0}
   effect: 1
   overrideAnimation: 0
+--- !u!114 &114284334104591892
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1949216185856970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb4fa562d67034868a9aafbe4b663012, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  rootNode: {fileID: 0}
+  segments:
+  - firstTransform: {fileID: 4645362417098780}
+    lastTransform: {fileID: 4914098991840158}
+    thresholdAngleDifference: 0
+    bendingMultiplier: 0.7
+    maxAngleDifference: 90
+    maxBendingAngle: 40
+    responsiveness: 2.5
+  - firstTransform: {fileID: 4221880395812252}
+    lastTransform: {fileID: 4416453566779200}
+    thresholdAngleDifference: 0
+    bendingMultiplier: 0.7
+    maxAngleDifference: 30
+    maxBendingAngle: 30
+    responsiveness: 80
+  nonAffectedJoints: []
+  headLookVector: {x: 0, y: 0, z: 1}
+  headUpVector: {x: 0, y: 1, z: 0}
+  target: {x: 0, y: 0, z: 0}
+  effect: 1
+  overrideAnimation: 0
+--- !u!114 &114627075994713286
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1949216185856970}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 26e300acb964e4415bcf8b11525e0ea7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  targetR: 0.1
+  nextTargetR: 1
+  targetAngleDif: 1
+  forwardNormalizedZ: 0.95
+  maxSpeed: 3
+  accSec: 0.5
+  brakeStartDis: 0.5
+  rotateSpeed: 180
 --- !u!137 &137028325352811526
 SkinnedMeshRenderer:
   m_ObjectHideFlags: 1

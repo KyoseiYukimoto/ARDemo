@@ -51,6 +51,10 @@ namespace UnityEngine.XR.iOS
 			if (avatar != null) {
 				avatar.SetPlane (arPlaneAnchor);
 			}
+			AvatarWalk2 avatar2 = plane.GetComponentInChildren<AvatarWalk2>();
+			if (avatar2 != null) {
+				avatar2.SetPlane (arPlaneAnchor);
+			}
 
 			return plane;
 		}

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR.iOS;
 
-public class AvatarWalk : MonoBehaviour {
+public class AvatarWalk2 : MonoBehaviour {
 
 	// 目標に到達したとみなす半径
 	public float targetR = 0.1f;
@@ -96,6 +96,19 @@ public class AvatarWalk : MonoBehaviour {
 	// クリックした場所を目標位置にする
 	void UpdateTargetPos()
 	{
+		#if UNITY_EDITOR
+		// クリックした瞬間のみ更新
+		if (!Input.GetMouseButtonDown (0)) {
+			return;
+		}
+		Debug.Log ("Click!");
+
+		// クリックした床の位置を取得
+		Camera camera = Camera.main;
+		Ray ray = camera.ScreenPointToRay (Input.mousePosition);
+		CalcTargetPos(camera.transform.position, camera.transform.position + ray.direction);
+		#else
+
 		// 平面が必要
 		if (plane == null) {
 			return;
@@ -131,31 +144,35 @@ public class AvatarWalk : MonoBehaviour {
 
 		// そこをターゲットに
 		CalcTargetPos(pos3a, pos3b);
+		#endif
 	}
 
 	// pos3aからpos3bへ向かうベクトルと床平面との交点を目標位置にする
 	void CalcTargetPos(Vector3 pos3a, Vector3 pos3b)
 	{
 		// 床平面と直線との交点を求める
-		Debug.Log ("pos3a " + pos3a.x + "," + pos3a.y + "," + pos3a.z);
-		Debug.Log ("pos3b " + pos3b.x + "," + pos3b.y + "," + pos3b.z);
 		GameObject root = transform.parent.transform.gameObject;
-		//Vector4 pos0 = plane.matrix.inverse * new Vector4(pos3a.x, pos3a.y, pos3a.z, 1);
-		//Vector4 pos1 = plane.matrix.inverse * new Vector4(pos3b.x, pos3b.y, pos3b.z, 1);
 		Vector3 pos0 = root.transform.InverseTransformPoint (pos3a);
 		Vector3 pos1 = root.transform.InverseTransformPoint (pos3b);
-		Debug.Log ("pos0 " + pos0.x + "," + pos0.y + "," + pos0.z);
-		Debug.Log ("pos1 " + pos1.x + "," + pos1.y + "," + pos1.z);
 		Vector3 vec = pos1 - pos0;
 		vec.Normalize ();
-		Debug.Log ("vec " + vec.x + "," + vec.y + "," + vec.z);
 		if (vec.y > -0.01f) { // 平行または離れるっぽい
 			return;
 		}
 		float scale = pos0.y / vec.y;
-		Debug.Log ("scale " + scale);
 		Vector3 pos = new Vector3 (pos0.x, pos0.y, pos0.z) - vec * scale;
-		Debug.Log ("pos " + pos.x + "," + pos.y + "," + pos.z);
+
+		// 現在の目標位置からある程度離れている時だけ更新
+		GameObject GO = GameObject.Find ("InputFieldNextTargetDis");
+		UnityEngine.UI.InputField IF = (GO == null) ? null : GO.GetComponent<UnityEngine.UI.InputField> ();
+		if (IF != null) {
+			float nextTargetDis = -1;
+			if (float.TryParse (IF.text, out nextTargetDis) && (targetPos - pos).magnitude < nextTargetDis) {
+				return;
+			}
+		}
+
+		// 決定
 		targetPos = pos;
 	}
 
