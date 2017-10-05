@@ -68,6 +68,9 @@
      <None Include="Assets\TUTORIAL.txt" />
      <None Include="Assets\UnityARKitPlugin\Plugins\iOS\UnityARKit\Shaders\YUVShader.shader" />
      <None Include="Assets\SCENES.txt" />
+ <Reference Include="Assembly-UnityScript">
+ <HintPath>/Users/kyoseiyukimoto/ARDemo/Library/ScriptAssemblies/Assembly-UnityScript.dll</HintPath>
+ </Reference>
  <Reference Include="UnityEditor.Advertisements">
  <HintPath>/Applications/Unity/Unity.app/Contents/UnityExtensions/Unity/Advertisements/Editor/UnityEditor.Advertisements.dll</HintPath>
  </Reference>
